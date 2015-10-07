@@ -1,6 +1,6 @@
 ## TODO: Implement CSV reading/writing
 require 'csv'
-
+require 'pry'
 
 class ContactData
  
@@ -9,54 +9,43 @@ class ContactData
   def initialize(file)
     @file = file
     @contacts = []
-
     read
   end
 
   def read
     @contacts = []
-
-    # Read all contacts from file
-
-    # CSV.foreach('contacts.csv') do |csv|
-    #   # puts "ID: #{csv[0]} Name: #{csv[1]} E-mail: #{csv[2]}" if option
-    #   @contacts << Contact.new() # use field from CSV to create contact
-    # end
-
     CSV.foreach(@file) do |row|
-      @contacts << Contact.from_row(row)
+      @contacts << Contact.creat_hash_from_row(row)
     end
+    @contacts
   end
 
-  def write
+  def show
+    show = []
+   @contacts.each do |contact|
+    show << Contact.to_s(contact)
+    end  
+    show.join("\n")
+  end
+
+  def find(key, value)
+    result = []
+    @contacts.each{|contact| result << contact if contact[key] == value }
+    result
+  end
+
+  def write(row)
     # Write All @contacts to the file
-    # CSV.open(@file, "a") do |csv|  
-    #   csv << @contacts
-    # end
-
-    open csv
-      @contacts.each { |c| csv << c.to_row }
+    CSV.open(@file, "a") do |csv|  
+      csv << row
     end
   end
-
-  def create(name, email, phone)
-    @contacts << Contact.new(new_id, name, email, phone)
-    write
-  end
-
-  private
 
   def new_id
-    @contacts.max(:id) + 1
+    max_id_contact = @contacts.max_by{|contact_hash| contact_hash[:id].to_i}
+    max_id = (max_id_contact[:id].to_i)+1
+    return max_id
   end
 
-  # def num_current_contact
-  #   @contacts.length
-  #   # total = 0
-  #   # CSV.foreach('contacts.csv') do |csv|
-  #   #   total += 1
-  #   # end
-  #   # total
-  # end
 
 end
