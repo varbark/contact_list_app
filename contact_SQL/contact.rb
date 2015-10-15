@@ -1,86 +1,54 @@
 require 'pg'
 require 'pry'
+require_relative 'contact_database'
 
-class Contact
+class Contact 
+  attr_reader :id, :firstname, :lastname, :email
 
-  attr_reader :id, :name, :email
-
-  class << self
-
-    @@conn = nil
-
-    def connection
-      if @@conn.nil?
-        @@conn = PG.connect(
-          host: 'localhost',
-          dbname: 'contact_list',
-          user: 'development',
-          password: 'development'
-        )
-      end
-      @@conn
-    end
-
-    def show_table
-      self.connection.exec('SELECT * FROM contacts;').each do |contact|
-        puts contact
-      end
-    end
-
-    def find(id)
-      self.connection.exec_params('SELECT * FROM contacts WHERE
-        id = $1;', [id]).each do |contact|
-        puts contact
-      end
-    end
-
-    def find_all_by_lastname(name)
-      self.connection.exec_params('SELECT * FROM contacts WHERE
-        lastname = $1;', [name]).each do |contact|
-        puts contact
-      end
-    end
-
-    def find_all_by_firstname(name)
-      self.connection.exec_params('SELECT * FROM contacts WHERE
-        firstname = $1;', [name]).each do |contact|
-        puts contact
-      end
-    end
-
-    def find_by_email(email)
-      self.connection.exec_params('SELECT * FROM contacts WHERE
-        firstname = $1;', [name]).each do |contact|
-        puts contact
-      end
-    end
-
-  end
+  @@db = ContactDatabase.new('localhost', 'contact_list', 'development', 'development')
+  # binding.pry
+ 
 
   def initialize(firstname, lastname, email)
     @firstname = firstname
     @lastname = lastname
     @email = email
+    @id = nil
   end
 
   def save
-    contact = self.class.connection.exec_params(
-      "INSERT INTO contacts(firstname, lastname, email)
-    VALUES($1, $2, $3) returning id;", [@firstname, @lastname, @email])
-     @id = contact[0]["id"]
+    @id = @@db.insert_db(@firstname, @lastname, @email)
+    "ID: #{@id}, FirstName: #{firstname}, LastName: #{lastname}, Email: #{email} Save."
   end
 
-
   def destroy
-    self.class.connection.exec_params("DELETE FROM contacts 
-      WHERE id = $1;", [@id])
+    @@db.delete_db(@id)
+    "ID: #{@id}, FirstName: #{firstname}, LastName: #{lastname}, Email: #{email} Delete."
+  end
+   
+  class << self
+
+    def show_table
+      @@db.show_table
+    end
+
+    def find(id)
+      @@db.select_db_by_ID(id)
+    end
+
+    def find_all_by_lastname(name)
+      @@db.select_all_by_lastname(name)
+    end
+
+    def find_all_by_firstname(name)
+      @@db.select_all_by_firstname(name)
+    end
+
+    def find_by_email(email)
+      @@db.select_by_email(email)
+    end
+
   end
 
 end
-
-
-
-
-
-
 
