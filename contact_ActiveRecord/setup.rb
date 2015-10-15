@@ -24,13 +24,16 @@ puts 'CONNECTED'
 puts 'Setting up Database (recreating tables) ...'
 
 ActiveRecord::Schema.define do
-  drop_table :contacts if ActiveRecord::Base.connection.table_exists?(:stores)
-  create_table :stores do |t|
+  drop_table :contacts if ActiveRecord::Base.connection.table_exists?(:contacts)
+  create_table :contacts do |t|
     t.column :firstname, :string
     t.column :lastname, :string
     t.column :email, :string
   end
 end
 
+Contact.create(firstname: 'Toto', lastname: 'Lai', email: 'toto@gmail.com')
+Contact.create(firstname: 'YC', lastname: 'Kuo', email: 'yc@gmail.com')
+Contact.create(firstname: 'Kenrick', lastname: 'Lin', email: 'kenrick@gmail.com')
 
 puts 'Setup DONE'

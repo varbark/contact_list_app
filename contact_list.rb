@@ -7,31 +7,30 @@ require 'pry'
     @db = ContactData.new('contacts.csv')
 
   def run_app
-    
-    get_command
-
-    case @command[0].downcase
-      when 'n'
-        new_contact
-      when 'l'
-        show_list
-      when 's'
-        show_contact_by_ID
-      when 'f'
-        find_by_name 
-      when 'h'
-        help
-      when 'q'
-        return
-      else 
-        run_app
-    end 
+    while true do
+      get_command
+      case @command[0].downcase
+        when 'n'
+          new_contact
+        when 'l'
+          show_list
+        when 's'
+          show_contact_by_ID
+        when 'f'
+          find_by_name 
+        when 'h'
+          help
+        when 'q'
+          return
+        end
+    end
 
   end
 
   def get_command
       puts 'Please give your command to the app: [N]ew, [L]ist, [S]how, [F]ind, [H]elp'
       ARGV.empty? ? @command = gets[0].downcase : @command = ARGV[0]
+      # binding.pry
       @name = ARGV[1].downcase unless ARGV[1].nil? 
        ARGV.clear
   end
